@@ -31,11 +31,6 @@
     padding:20px;
   }
 
-  #splash .curtain { position:absolute; top:0; bottom:0; z-index:-1; overflow:hidden; }
-  #splash .curtain img { width:100%; height:100%; object-fit:cover; display:block; opacity:.55; }
-  #splash .curtain.left { left:0; width:16%; }
-  #splash .curtain.right { right:0; width:16%; }
-
   #splash h1 {
     font-size:clamp(22px, 6vw, 42px);
     letter-spacing:4px;
@@ -95,6 +90,13 @@
   #blackFade.fadeOut { opacity:1; }
 
   /* ---------- 영상 화면 + 커튼 ---------- */
+  /* ---------- 인트로 커튼 (페이지 열리자마자 닫혀있다가 자동으로 열림) ---------- */
+  #introCurtain {
+    position:fixed; inset:0;
+    z-index:15;
+    pointer-events:none;
+  }
+
   #videoWrap {
     position:fixed; inset:0;
     background:#000;
@@ -160,10 +162,14 @@
     <p>영화관 모드를 위해<br>화면을 가로로 돌려주세요</p>
   </div>
 
+  <!-- 인트로 커튼 (열리면서 메인 화면 공개) -->
+  <div id="introCurtain">
+    <div class="stageCurtain leftStage" id="curtainLeft"><img src="front_curtain.webp" alt=""></div>
+    <div class="stageCurtain rightStage" id="curtainRight"><img src="back_curtain.webp" alt=""></div>
+  </div>
+
   <!-- 메인(대기) 화면 -->
   <div id="splash">
-    <div class="curtain left"><img src="front_curtain.webp" alt=""></div>
-    <div class="curtain right"><img src="back_curtain.webp" alt=""></div>
     <h1>지금 상영합니다</h1>
     <p class="sub">화면을 터치하여 입장하세요</p>
     <button id="enterBtn">입장하기</button>
@@ -181,8 +187,6 @@
       allow="autoplay; fullscreen; encrypted-media"
       allowfullscreen
       frameborder="0"></iframe>
-    <div class="stageCurtain leftStage" id="curtainLeft"><img src="front_curtain.webp" alt=""></div>
-    <div class="stageCurtain rightStage" id="curtainRight"><img src="back_curtain.webp" alt=""></div>
   </div>
 
 <script>
@@ -234,14 +238,8 @@
 
   function startMovie() {
     videoWrap.style.display = 'block';
-    // 유튜브 자동재생 삽입 (커튼 뒤에서 미리 로드)
+    // 유튜브 자동재생 삽입
     player.src = `https://www.youtube.com/embed/${YOUTUBE_VIDEO_ID}?autoplay=1&playsinline=1&controls=0&rel=0`;
-
-    // 잠깐 뒤 커튼을 양옆으로 열어 영화 공개
-    setTimeout(() => {
-      curtainLeft.classList.add('open');
-      curtainRight.classList.add('open');
-    }, 500);
   }
 
   function enterCinema() {
@@ -269,6 +267,14 @@
 
   // 화면 전체를 터치해도 입장되게 (버튼 뿐 아니라)
   splash.addEventListener('click', enterCinema);
+
+  // 페이지가 열리면 잠깐 뒤 인트로 커튼이 자동으로 열리며 메인 화면 공개
+  window.addEventListener('load', () => {
+    setTimeout(() => {
+      curtainLeft.classList.add('open');
+      curtainRight.classList.add('open');
+    }, 600);
+  });
 </script>
 
 </body>
